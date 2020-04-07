@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body, html{padding: 0; margin: 0;}
+        #app {width: 100%;}
+        .sbar {width: 100%; background: black; color: white; padding: 5px;}
+        .sbar h1{text-align: center;}
+        .sbar input{width: 100%; max-width: 320px; padding: 5px; font-size: 14px; margin: 5px auto; display: block; text-align: center;}
+        .sbar input::placeholder {text-align: center;}
+        .c-cont {width: 100%; padding: 12px; display: flex; flex-wrap: wrap; align-items: flex-start;}
+        .card {width: 100%; max-width: 130px; padding: 5px 5px;}
+        .card p {text-align: center; min-height: 54px; margin-bottom: 0;}
+        .card img {width: 100%; display: block;}
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="sbar"><h1>Maghanap ng card</h1><input type="text" v-model="keyword" v-on:keyup="Search"></div>
+        <div class="c-cont">
+            <div class="card" v-for="card in cards">
+                <p>{{card.name}}</p>
+                <img v-if="card.imageUrl == null || card.imageUrl == ''" src="images/no-img.png" alt="">
+                <img v-else :src="card.imageUrl" alt="">
+            </div>
+        </div class="c-cont">
+    </div>
+
+    <script src="js/vue.min.js"></script>
+    <script src="js/axios.min.js"></script>
+    <script>
+        new Vue({
+            el : "#app",
+            data : {
+                keyword : "omnath",
+                cards : []
+            },
+            mounted : function(){
+                let self = this;
+                axios.get("https://api.magicthegathering.io/v1/cards?name="+self.keyword+"")
+                .then(function(response){
+                    self.cards = response.data.cards;
+                });
+            },
+            methods : {
+                Search() {
+                    let self = this;
+                    axios.get("https://api.magicthegathering.io/v1/cards?name="+self.keyword+"")
+                    .then(function(response){
+                        self.cards = [];
+                        self.cards = response.data.cards;
+                    });
+                }
+            }
+        })
+    </script>
+</body>
+</html>
